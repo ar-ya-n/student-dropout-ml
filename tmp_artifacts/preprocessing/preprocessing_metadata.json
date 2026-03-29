@@ -1,0 +1,34 @@
+{
+  "selected_features": [
+    "C",
+    "E",
+    "D",
+    "B"
+  ],
+  "class_distribution_before": {
+    "0": 0.7548076923076923,
+    "1": 0.24519230769230768
+  },
+  "class_distribution_after": {
+    "0": 0.5,
+    "1": 0.5
+  },
+  "test_size": 0.2,
+  "stratified": true,
+  "random_state": 42,
+  "feature_selection_method": "correlation",
+  "correlation_threshold": 0.12,
+  "mutual_info_threshold": 0.01,
+  "mutual_info_top_k": null,
+  "balance_strategy": "smote",
+  "correlation_scores": {
+    "C": 0.442525251343104,
+    "E": 0.37676819917381305,
+    "D": 0.3736498062432295,
+    "B": 0.2889937162588705,
+    "A": 0.09357456449124932,
+    "Gender_F": 0.07326243539062963,
+    "Gender_M": 0.07326243539062958,
+    "F": 0.03056817933382724
+  }
+}

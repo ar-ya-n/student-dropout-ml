@@ -1,0 +1,10 @@
+[
+  {
+    "name": "logistic_regression",
+    "best_cv_score": 0.8297875754075216,
+    "test_precision": 0.6666666666666666,
+    "test_recall": 0.7692307692307693,
+    "test_f1": 0.7142857142857143,
+    "test_roc_auc": 0.9289940828402367
+  }
+]

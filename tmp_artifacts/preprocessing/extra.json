@@ -1,0 +1,6 @@
+{
+  "target_column": "Dropout",
+  "id_columns": [
+    "Student_ID"
+  ]
+}
