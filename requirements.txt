@@ -7,3 +7,4 @@ imbalanced-learn
 pytest
 xgboost
 lightgbm
+flask
