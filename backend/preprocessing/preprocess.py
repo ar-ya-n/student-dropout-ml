@@ -342,6 +342,73 @@ def load_preprocessing_artifacts(
     }
 
 
+def engineer_features(X: pd.DataFrame) -> pd.DataFrame:
+    """
+    IMPROVEMENT: Feature engineering to capture non-linear relationships
+    and interactions between variables.
+
+    Creates:
+    - Interaction terms (CGPA*Attendance, Stress*Engagement, Study*CGPA)
+    - Composite scores (Total Risk, Academic Health, Procrastination)
+    - Non-linear terms (Stress^2, CGPA^2)
+    - Threshold-based flags (Low CGPA, High Stress)
+    """
+    X_eng = X.copy()
+
+    logger.info("Applying feature engineering...")
+
+    # 1. Interaction terms
+    if "CGPA" in X_eng.columns and "Attendance_Rate" in X_eng.columns:
+        X_eng["CGPA_x_Attendance"] = X_eng["CGPA"] * X_eng["Attendance_Rate"]
+
+    if "Stress_Index" in X_eng.columns and "Engagement_Score" in X_eng.columns:
+        X_eng["Stress_x_Engagement"] = X_eng["Stress_Index"] * X_eng["Engagement_Score"]
+
+    if "Study_Hours_per_Day" in X_eng.columns and "CGPA" in X_eng.columns:
+        X_eng["Study_Hours_x_CGPA"] = X_eng["Study_Hours_per_Day"] * X_eng["CGPA"]
+
+    # 2. Composite scores
+    if "Academic_Risk_Score" in X_eng.columns and "Stress_Index" in X_eng.columns:
+        X_eng["Total_Risk_Score"] = (X_eng["Academic_Risk_Score"] + X_eng["Stress_Index"]) / 2
+
+    if all(
+        col in X_eng.columns
+        for col in ["CGPA", "Attendance_Rate", "Engagement_Score"]
+    ):
+        X_eng["Academic_Health_Index"] = (
+            (X_eng["CGPA"] / 4.0) * 0.4
+            + X_eng["Attendance_Rate"] * 0.3
+            + (X_eng["Engagement_Score"] / 100) * 0.3
+        )
+
+    if "Assignment_Delay_Days" in X_eng.columns and "Study_Hours_per_Day" in X_eng.columns:
+        X_eng["Procrastination_Index"] = (
+            X_eng["Assignment_Delay_Days"] / (X_eng["Study_Hours_per_Day"] + 0.1)
+        )
+
+    if "Financial_Stress_Index" in X_eng.columns and "Support_Access_Score" in X_eng.columns:
+        X_eng["Support_Adequacy"] = (
+            X_eng["Support_Access_Score"] - X_eng["Financial_Stress_Index"]
+        )
+
+    # 3. Non-linear terms
+    if "Stress_Index" in X_eng.columns:
+        X_eng["Stress_Index_Squared"] = X_eng["Stress_Index"] ** 2
+
+    if "CGPA" in X_eng.columns:
+        X_eng["CGPA_Squared"] = X_eng["CGPA"] ** 2
+
+    # 4. Threshold-based flags
+    if "CGPA" in X_eng.columns:
+        X_eng["Low_CGPA"] = (X_eng["CGPA"] < 2.5).astype(int)
+
+    if "Stress_Index" in X_eng.columns:
+        X_eng["High_Stress"] = (X_eng["Stress_Index"] > 75).astype(int)
+
+    logger.info(f"Features: {len(X)} -> {len(X_eng)} (+{len(X_eng) - len(X)} engineered)")
+    return X_eng
+
+
 def preprocess_data(
     df: pd.DataFrame,
     test_size: float = 0.2,
@@ -361,7 +428,7 @@ def preprocess_data(
     np.ndarray,
     pd.Series,
     pd.Series,
-    StandardScaler,
+    list[str],
     dict[str, Any],
 ]:
     """
@@ -460,6 +527,6 @@ def preprocess_data(
         X_test_scaled,
         y_train_balanced,
         y_test,
-        scaler,
+        selected_features,
         metadata,
     )

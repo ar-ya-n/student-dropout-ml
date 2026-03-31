@@ -1,6 +1,13 @@
 [
-  "C",
-  "E",
-  "D",
-  "B"
+  "CGPA",
+  "Academic_Risk_Score",
+  "Counseling_Priority_Score",
+  "GPA_vs_Effort_Gap",
+  "Counseling_Urgency_Moderate",
+  "Counseling_Urgency_High",
+  "Stress_Index",
+  "Attendance_Rate",
+  "Engagement_Score",
+  "Counseling_Urgency_Critical",
+  "Low_Attendance_Flag"
 ]

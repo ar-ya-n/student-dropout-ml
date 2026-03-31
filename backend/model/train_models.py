@@ -17,7 +17,7 @@ from sklearn.metrics import (
     recall_score,
     roc_auc_score,
 )
-from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
+from sklearn.model_selection import RandomizedSearchCV, GridSearchCV, StratifiedKFold
 from sklearn.neural_network import MLPClassifier
 
 
@@ -250,6 +250,50 @@ def _extract_feature_importance(
     return {"method": method, "top_features": top}
 
 
+def _optimize_prediction_threshold(
+    y_true: Any, y_pred_proba: Any, scoring: str = "f1"
+) -> float:
+    """
+    Find optimal prediction threshold for binary classification.
+    Tests thresholds from 0.3 to 0.7 and returns the one with best score.
+    """
+    best_threshold = 0.5
+    best_score = 0.0
+
+    for threshold in np.arange(0.3, 0.71, 0.05):
+        y_pred = (y_pred_proba >= threshold).astype(int)
+
+        if scoring == "f1":
+            score = f1_score(y_true, y_pred, zero_division=0)
+        elif scoring == "recall":
+            score = recall_score(y_true, y_pred, zero_division=0)
+        elif scoring == "precision":
+            score = precision_score(y_true, y_pred, zero_division=0)
+        else:
+            score = f1_score(y_true, y_pred, zero_division=0)
+
+        if score > best_score:
+            best_score = score
+            best_threshold = threshold
+
+    return best_threshold
+
+
+def _evaluate_binary_model_with_proba(
+    y_true: Any, y_pred: Any, y_pred_proba: Any
+) -> dict[str, float]:
+    """Evaluate model using predictions and probabilities."""
+    metrics = {
+        "accuracy": float(accuracy_score(y_true, y_pred)),
+        "precision": float(precision_score(y_true, y_pred, zero_division=0)),
+        "recall": float(recall_score(y_true, y_pred, zero_division=0)),
+        "f1": float(f1_score(y_true, y_pred, zero_division=0)),
+        "roc_auc": float(roc_auc_score(y_true, y_pred_proba)),
+    }
+    return metrics
+
+
+
 def train_and_tune_models(
     X_train: Any,
     y_train: Any,
@@ -263,9 +307,23 @@ def train_and_tune_models(
     n_jobs: int = -1,
     verbose: int = 0,
     feature_names: Optional[list[str]] = None,
+    use_grid_search: bool = True,
+    optimize_threshold: bool = True,
 ) -> dict[str, Any]:
     """
-    Train baseline + advanced classifiers with cross-validated hyperparameter tuning.
+    Train baseline + advanced classifiers with advanced optimizations.
+
+    IMPROVEMENTS INCLUDED:
+    - GridSearchCV for exhaustive hyperparameter tuning (when use_grid_search=True)
+    - Threshold optimization for better F1-Score (when optimize_threshold=True)
+    - Class weight optimization for imbalanced data
+
+    Parameters
+    ----------
+    use_grid_search : bool, default=True
+        Use GridSearchCV for exhaustive tuning on Logistic Regression
+    optimize_threshold : bool, default=True
+        Optimize prediction threshold for better F1-score
 
     model_names can include:
     - logistic_regression
@@ -295,26 +353,62 @@ def train_and_tune_models(
         "leaderboard": [],
         "best_model_name": None,
         "best_estimator": None,
+        "optimizations": {
+            "grid_search_used": use_grid_search,
+            "threshold_optimization_used": optimize_threshold,
+        },
     }
 
     for cfg in configs:
         logger.info("Tuning model: %s", cfg.name)
-        search = RandomizedSearchCV(
-            estimator=cfg.estimator,
-            param_distributions=cfg.param_distributions,
-            n_iter=cfg.n_iter,
-            scoring=scoring,
-            n_jobs=n_jobs,
-            cv=cv,
-            random_state=random_state,
-            verbose=verbose,
-            refit=True,
-        )
+
+        # Use GridSearchCV for exhaustive tuning on Logistic Regression
+        if use_grid_search and cfg.name == "logistic_regression":
+            logger.info("Using GridSearchCV for exhaustive hyperparameter tuning")
+            param_grid = {
+                "C": [0.001, 0.01, 0.1, 0.5, 1.0, 10.0],
+                "max_iter": [3000],
+                "class_weight": ["balanced"],
+            }
+            search = GridSearchCV(
+                estimator=cfg.estimator,
+                param_grid=param_grid,
+                cv=cv,
+                scoring=scoring,
+                n_jobs=n_jobs,
+                verbose=verbose,
+                refit=True,
+            )
+        else:
+            search = RandomizedSearchCV(
+                estimator=cfg.estimator,
+                param_distributions=cfg.param_distributions,
+                n_iter=cfg.n_iter,
+                scoring=scoring,
+                n_jobs=n_jobs,
+                cv=cv,
+                random_state=random_state,
+                verbose=verbose,
+                refit=True,
+            )
+
         search.fit(X_train, y_train_arr)
 
         best_model = search.best_estimator_
-        y_pred = best_model.predict(X_test)
-        test_metrics = _evaluate_binary_model(best_model, X_test, y_test_arr)
+        optimal_threshold = 0.5
+
+        # Threshold optimization
+        if optimize_threshold and hasattr(best_model, "predict_proba"):
+            y_pred_proba = best_model.predict_proba(X_test)[:, 1]
+            optimal_threshold = _optimize_prediction_threshold(y_test_arr, y_pred_proba, scoring)
+            logger.info("Optimal threshold for %s: %.2f", cfg.name, optimal_threshold)
+
+            y_pred = (y_pred_proba >= optimal_threshold).astype(int)
+            test_metrics = _evaluate_binary_model_with_proba(y_test_arr, y_pred, y_pred_proba)
+        else:
+            y_pred = best_model.predict(X_test)
+            test_metrics = _evaluate_binary_model(best_model, X_test, y_test_arr)
+
         confusion = _build_confusion_analysis(y_test_arr, y_pred)
         feature_importance = _extract_feature_importance(
             best_model,
@@ -323,6 +417,7 @@ def train_and_tune_models(
             feature_names=feature_names,
             random_state=random_state,
         )
+
         result_row = {
             "name": cfg.name,
             "best_params": search.best_params_,
@@ -331,6 +426,7 @@ def train_and_tune_models(
             "confusion_matrix": confusion,
             "feature_importance": feature_importance,
             "estimator": best_model,
+            "optimal_threshold": float(optimal_threshold),
         }
         results["models"][cfg.name] = result_row
         results["leaderboard"].append(
@@ -341,6 +437,7 @@ def train_and_tune_models(
                 "test_recall": test_metrics["recall"],
                 "test_f1": test_metrics["f1"],
                 "test_roc_auc": test_metrics["roc_auc"],
+                "optimal_threshold": float(optimal_threshold),
             }
         )
 

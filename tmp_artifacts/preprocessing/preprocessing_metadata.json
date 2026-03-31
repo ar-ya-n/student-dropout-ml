@@ -1,17 +1,24 @@
 {
   "selected_features": [
-    "C",
-    "E",
-    "D",
-    "B"
+    "CGPA",
+    "Academic_Risk_Score",
+    "Counseling_Priority_Score",
+    "GPA_vs_Effort_Gap",
+    "Counseling_Urgency_Moderate",
+    "Counseling_Urgency_High",
+    "Stress_Index",
+    "Attendance_Rate",
+    "Engagement_Score",
+    "Counseling_Urgency_Critical",
+    "Low_Attendance_Flag"
   ],
   "class_distribution_before": {
-    "0": 0.7548076923076923,
-    "1": 0.24519230769230768
+    "0": 0.764625,
+    "1": 0.235375
   },
   "class_distribution_after": {
-    "0": 0.5,
-    "1": 0.5
+    "1": 0.5,
+    "0": 0.5
   },
   "test_size": 0.2,
   "stratified": true,
@@ -22,13 +29,43 @@
   "mutual_info_top_k": null,
   "balance_strategy": "smote",
   "correlation_scores": {
-    "C": 0.442525251343104,
-    "E": 0.37676819917381305,
-    "D": 0.3736498062432295,
-    "B": 0.2889937162588705,
-    "A": 0.09357456449124932,
-    "Gender_F": 0.07326243539062963,
-    "Gender_M": 0.07326243539062958,
-    "F": 0.03056817933382724
+    "CGPA": 0.4471047735364248,
+    "Academic_Risk_Score": 0.4458119172271215,
+    "Counseling_Priority_Score": 0.4228514992027127,
+    "GPA_vs_Effort_Gap": 0.3882790764375109,
+    "Counseling_Urgency_Moderate": 0.322929379803227,
+    "Counseling_Urgency_High": 0.2810004511375353,
+    "Stress_Index": 0.24424041703048768,
+    "Attendance_Rate": 0.16863537287877775,
+    "Engagement_Score": 0.1615082366172597,
+    "Counseling_Urgency_Critical": 0.16095000160265804,
+    "Low_Attendance_Flag": 0.13386857977433428,
+    "Study_Hours_per_Day": 0.0877026571746957,
+    "Assignment_Delay_Days": 0.08105802061495597,
+    "Internet_Access_No": 0.03962969422170212,
+    "Internet_Access_Yes": 0.039629694221701976,
+    "Financial_Stress_Index": 0.03718320077631598,
+    "Part_Time_Job_No": 0.034763845994272936,
+    "Part_Time_Job_Yes": 0.034763845994272874,
+    "Travel_Time_Minutes": 0.03174696692707659,
+    "Counseling_Urgency_Low": 0.0284636987663282,
+    "Support_Access_Score": 0.024048987455656125,
+    "Parental_Education_Level": 0.018624697857354315,
+    "Department_Science": 0.014555197114126926,
+    "Family_Income": 0.012813910317484889,
+    "Income_Bracket_High": 0.010326885151357927,
+    "Department_Arts": 0.010222316154226956,
+    "Academic_Year_Num": 0.00983984160617697,
+    "Gender_Female": 0.0096192063463171,
+    "Gender_Male": 0.009619206346317034,
+    "Age": 0.009467092293659501,
+    "Department_Engineering": 0.00797149553973345,
+    "Department_CS": 0.004928217862369083,
+    "Income_Bracket_Upper-Middle": 0.004864602922567023,
+    "Income_Bracket_Low": 0.004312898399202108,
+    "Scholarship_No": 0.001959658576964537,
+    "Scholarship_Yes": 0.0019596585769645312,
+    "Department_Business": 0.0015941402806403798,
+    "Income_Bracket_Middle": 0.0005835567229907447
   }
 }

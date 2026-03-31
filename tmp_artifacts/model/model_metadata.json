@@ -3,15 +3,15 @@
   "models": {
     "logistic_regression": {
       "best_params": {
-        "C": 100.0
+        "C": 0.12742749857031335
       },
-      "best_cv_score": 0.8297875754075216,
+      "best_cv_score": 0.7492734310004946,
       "test_metrics": {
-        "accuracy": 0.8461538461538461,
-        "precision": 0.6666666666666666,
-        "recall": 0.7692307692307693,
-        "f1": 0.7142857142857143,
-        "roc_auc": 0.9289940828402367
+        "accuracy": 0.7305,
+        "precision": 0.45526315789473687,
+        "recall": 0.7346072186836518,
+        "f1": 0.5621445978878961,
+        "roc_auc": 0.8109695220083343
       },
       "confusion_matrix": {
         "labels": [
@@ -20,40 +20,249 @@
         ],
         "matrix": [
           [
-            34,
-            5
+            1115,
+            414
           ],
           [
-            3,
-            10
+            125,
+            346
           ]
         ],
-        "tn": 34,
-        "fp": 5,
-        "fn": 3,
-        "tp": 10,
-        "specificity": 0.8717948717948718,
-        "false_positive_rate": 0.1282051282051282,
-        "false_negative_rate": 0.23076923076923078
+        "tn": 1115,
+        "fp": 414,
+        "fn": 125,
+        "tp": 346,
+        "specificity": 0.7292347939829954,
+        "false_positive_rate": 0.2707652060170046,
+        "false_negative_rate": 0.2653927813163482
       },
       "feature_importance": {
         "method": "abs_coef",
         "top_features": [
           {
-            "feature": "D",
-            "importance": 20.43983016466014
+            "feature": "Counseling_Urgency_High",
+            "importance": 1.6248673168934455
           },
           {
-            "feature": "E",
-            "importance": 18.324835984319915
+            "feature": "Counseling_Urgency_Moderate",
+            "importance": 1.562191523533041
           },
           {
-            "feature": "B",
-            "importance": 12.310650326015908
+            "feature": "Counseling_Urgency_Critical",
+            "importance": 0.5413206097389063
           },
           {
-            "feature": "C",
-            "importance": 9.154487723423344
+            "feature": "CGPA",
+            "importance": 0.3839182656690839
+          },
+          {
+            "feature": "Academic_Risk_Score",
+            "importance": 0.36160815982169514
+          },
+          {
+            "feature": "GPA_vs_Effort_Gap",
+            "importance": 0.3021392426930081
+          },
+          {
+            "feature": "Counseling_Priority_Score",
+            "importance": 0.30016179045755725
+          },
+          {
+            "feature": "Stress_Index",
+            "importance": 0.19872926269071056
+          },
+          {
+            "feature": "Engagement_Score",
+            "importance": 0.18246678385685677
+          },
+          {
+            "feature": "Low_Attendance_Flag",
+            "importance": 0.10876271152010605
+          },
+          {
+            "feature": "Attendance_Rate",
+            "importance": 0.10415680443503302
+          }
+        ]
+      }
+    },
+    "random_forest": {
+      "best_params": {
+        "n_estimators": 300,
+        "min_samples_split": 2,
+        "min_samples_leaf": 2,
+        "max_features": "log2",
+        "max_depth": 15
+      },
+      "best_cv_score": 0.8144153234299377,
+      "test_metrics": {
+        "accuracy": 0.754,
+        "precision": 0.4830917874396135,
+        "recall": 0.6369426751592356,
+        "f1": 0.5494505494505495,
+        "roc_auc": 0.7925152639903132
+      },
+      "confusion_matrix": {
+        "labels": [
+          0,
+          1
+        ],
+        "matrix": [
+          [
+            1208,
+            321
+          ],
+          [
+            171,
+            300
+          ]
+        ],
+        "tn": 1208,
+        "fp": 321,
+        "fn": 171,
+        "tp": 300,
+        "specificity": 0.790058862001308,
+        "false_positive_rate": 0.20994113799869196,
+        "false_negative_rate": 0.3630573248407643
+      },
+      "feature_importance": {
+        "method": "feature_importances_",
+        "top_features": [
+          {
+            "feature": "CGPA",
+            "importance": 0.1878744660925964
+          },
+          {
+            "feature": "Academic_Risk_Score",
+            "importance": 0.18584000672107084
+          },
+          {
+            "feature": "Counseling_Priority_Score",
+            "importance": 0.16716983078388994
+          },
+          {
+            "feature": "GPA_vs_Effort_Gap",
+            "importance": 0.1190785881043977
+          },
+          {
+            "feature": "Engagement_Score",
+            "importance": 0.09129297576977985
+          },
+          {
+            "feature": "Attendance_Rate",
+            "importance": 0.08919349956138851
+          },
+          {
+            "feature": "Stress_Index",
+            "importance": 0.0869781082540464
+          },
+          {
+            "feature": "Counseling_Urgency_High",
+            "importance": 0.03533665882846588
+          },
+          {
+            "feature": "Counseling_Urgency_Moderate",
+            "importance": 0.030720012835130282
+          },
+          {
+            "feature": "Low_Attendance_Flag",
+            "importance": 0.004677338154078079
+          },
+          {
+            "feature": "Counseling_Urgency_Critical",
+            "importance": 0.0018385148951561784
+          }
+        ]
+      }
+    },
+    "neural_network": {
+      "best_params": {
+        "learning_rate_init": 0.001,
+        "hidden_layer_sizes": [
+          128,
+          64
+        ],
+        "batch_size": 32,
+        "alpha": 0.001,
+        "activation": "relu"
+      },
+      "best_cv_score": 0.7659792348847148,
+      "test_metrics": {
+        "accuracy": 0.73,
+        "precision": 0.4491899852724595,
+        "recall": 0.6475583864118896,
+        "f1": 0.5304347826086957,
+        "roc_auc": 0.7809386538250581
+      },
+      "confusion_matrix": {
+        "labels": [
+          0,
+          1
+        ],
+        "matrix": [
+          [
+            1155,
+            374
+          ],
+          [
+            166,
+            305
+          ]
+        ],
+        "tn": 1155,
+        "fp": 374,
+        "fn": 166,
+        "tp": 305,
+        "specificity": 0.7553956834532374,
+        "false_positive_rate": 0.2446043165467626,
+        "false_negative_rate": 0.3524416135881104
+      },
+      "feature_importance": {
+        "method": "permutation_importance",
+        "top_features": [
+          {
+            "feature": "Counseling_Priority_Score",
+            "importance": 0.19456621807832744
+          },
+          {
+            "feature": "Counseling_Urgency_High",
+            "importance": 0.192979779790172
+          },
+          {
+            "feature": "Academic_Risk_Score",
+            "importance": 0.1634751483577906
+          },
+          {
+            "feature": "GPA_vs_Effort_Gap",
+            "importance": 0.07836702859964191
+          },
+          {
+            "feature": "CGPA",
+            "importance": 0.06662776945382433
+          },
+          {
+            "feature": "Stress_Index",
+            "importance": 0.06604802811854926
+          },
+          {
+            "feature": "Engagement_Score",
+            "importance": 0.008299736241529776
+          },
+          {
+            "feature": "Counseling_Urgency_Moderate",
+            "importance": 0.00810380306304569
+          },
+          {
+            "feature": "Attendance_Rate",
+            "importance": 0.00611031848544632
+          },
+          {
+            "feature": "Counseling_Urgency_Critical",
+            "importance": 0.001841646132579966
+          },
+          {
+            "feature": "Low_Attendance_Flag",
+            "importance": -0.009410728172236671
           }
         ]
       }

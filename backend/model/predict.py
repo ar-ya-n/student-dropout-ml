@@ -83,12 +83,26 @@ def predict_batch(
     model: Any,
     scaler: Any,
     feature_names: list[str],
+    threshold: float = 0.5,
 ) -> pd.DataFrame:
-    """Batch predictions with preprocessing."""
+    """
+    Batch predictions with preprocessing.
+
+    Parameters
+    ----------
+    threshold : float, default=0.5
+        Classification threshold for probability predictions.
+        Use optimized threshold (e.g., 0.45) for better F1-Score.
+    """
     X_aligned = _prepare_features(X_new, feature_names)
     X_scaled = scaler.transform(X_aligned)
 
-    preds = model.predict(X_scaled)
+    if hasattr(model, "predict_proba"):
+        proba = model.predict_proba(X_scaled)[:, 1]
+        preds = (proba >= threshold).astype(int)
+    else:
+        preds = model.predict(X_scaled)
+
     output = pd.DataFrame({"prediction": preds.astype(int)})
 
     if hasattr(model, "predict_proba"):
